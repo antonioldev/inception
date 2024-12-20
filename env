@@ -1,0 +1,29 @@
+# Path to the Docker Compose file
+COMPOSE_FILE=srcs/docker-compose.yml
+
+# Path to the directory containing secrets
+SECRETS_DIR=data/secrets/userlist
+
+# Path to the Volumes
+WORDPRESS_VOLUME=data/wordpress
+MARIADB_VOLUME=data/mariadb
+
+# Name database in SQL
+DATABASE_NAME=wordPress
+
+# Domain name (for SSL)
+DOMAIN_NAME=
+
+# Set the user (this will be used to set the path for volumes)
+USER=
+
+# Path to the .env file
+ENV_FILE=srcs/.env
+
+# Path to the Docker Compose file
+COMPOSE_FILE = srcs/docker-compose.yml
+
+# Color codes for output
+GREEN = \033[32m
+RED = \033[31m
+RESET = \033[0m

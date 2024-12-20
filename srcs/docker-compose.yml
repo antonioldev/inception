@@ -1,0 +1,128 @@
+services:
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+    container_name: mariadb
+    image: mariadb
+    expose:
+     - "3306"
+    networks:
+     - inception_network
+    restart: on-failure #unless-stopped
+    volumes:
+      - mariadb_volume:/var/lib/mysql
+    secrets:
+      - db_user
+      - db_password
+      - db_boss_user
+      - db_boss_password
+    env_file: .env
+      
+  wp-php:
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    container_name: wp-php
+    image: wp-php
+    expose:
+     - "9000"
+    networks:
+     - inception_network
+    restart: on-failure
+    volumes:
+       - wordpress_volume:/var/www/html
+    depends_on:
+      - mariadb
+    env_file: .env
+
+  nginx:
+    build: 
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    image: nginx
+    ports:
+      - 443:443
+    networks:
+      - inception_network
+      - external_network
+    restart: on-failure
+    volumes:
+      - wordpress_volume:/var/www/html:ro
+    depends_on:
+      - wp-php
+
+  redis:
+    build:
+      context: ./requirements/bonus/redis
+      dockerfile: Dockerfile
+    container_name: redis
+    image: redis
+    expose:
+      - "6379"
+    networks:
+      - inception_network
+    restart: on-failure
+  
+  static_site:
+    build:
+      context: ./requirements/bonus/static_site
+      dockerfile: Dockerfile
+    container_name: static_site
+    image: static_site
+    expose:
+      - "8000"
+    networks:
+      - inception_network
+    restart: on-failure
+  
+  adminer:
+    build:
+      context: ./requirements/bonus/adminer
+      dockerfile: Dockerfile
+    container_name: adminer
+    image: adminer
+    expose:
+      - "8080"
+    networks:
+      - inception_network
+    restart: on-failure
+
+
+volumes:
+  wordpress_volume:
+    name: wordpress_volume
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/${WORDPRESS_VOLUME}
+  mariadb_volume:
+    name: mariadb_volume
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/${MARIADB_VOLUME}
+
+networks:
+  inception_network:
+    name: net
+    driver: bridge
+    internal: true
+  external_network:
+    name: external_net
+
+secrets:
+  db_user:
+    file: /home/${USER}/${SECRETS_DIR}/db_user.txt
+  db_password:
+    file: /home/${USER}/${SECRETS_DIR}/db_password.txt
+  db_boss_user:
+    file: /home/${USER}/${SECRETS_DIR}/db_boss_user.txt
+  db_boss_password:
+    file: /home/${USER}/${SECRETS_DIR}/db_boss_password.txt
+
+
+
