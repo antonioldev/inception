@@ -6,9 +6,13 @@ Inception is a project inspired by the need to understand Docker and containeriz
 
 The goal of this project was to create an entire web application environment using Docker Compose. Each service runs in its own container, and they all communicate through an internal network. The environment includes:
 
+MANDATORY PART:
 - NGINX for serving as a reverse proxy.
 - MariaDB as the database service.
 - WordPress for content management.
+
+BONUS PART:
+- Adminer for database management.
 - Redis for caching.
 - A static site service.
 
